@@ -1,3 +1,4 @@
+import KnightMoves.*
 import java.lang.RuntimeException
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -38,25 +39,51 @@ class Knight(
     private var currentPoint = startingPoint
 
     fun availableMoves(): List<Point> {
-        return availableDirections.map { it.add(currentPoint) }
+        return availableDirections.values.map { it.add(currentPoint) }
     }
 
-    private fun findNextMove(currentPoint1: Point): Point {
-        val direction = currentPoint1.findDirection(destinationPoint)
-        return availableDirections.minByOrNull { it.findDirection(direction).findMagnitude() }?.add(currentPoint1)
+    private fun findNextGeneralDirectionMove(currentPoint1: Point): Point {
+        val directionOfDestination = currentPoint1.findDirection(destinationPoint)
+        return availableDirections.values.minByOrNull { it.findDirection(directionOfDestination).findMagnitude() }
+            ?.add(currentPoint1)
             ?: throw RuntimeException("Unable to find next move")
+    }
+
+    private fun dialInPosition(): List<Point> {
+        val nextMoves = mutableListOf<Point>()
+        //Direction should now be something like (-1,1), (1,0) but always just 1s and 0s
+        //TODO take into account the edge of the board
+        val nextDirections = when (destinationPoint.findDirection(currentPoint)) {
+            Point(0, 1) -> listOf(ONE_O_CLOCK, FOUR_O_CLOCK)
+            Point(1, 1) -> listOf(FIVE_O_CLOCK)
+            Point(1, 0) -> listOf(FOUR_O_CLOCK, SEVEN_O_CLOCK)
+            Point(1, -1) -> listOf(SEVEN_O_CLOCK)
+            Point(0, -1) -> listOf(FIVE_O_CLOCK, TWO_O_CLOCK)
+            Point(-1, -1) -> listOf(FOUR_O_CLOCK)
+            Point(-1, 0) -> listOf(EIGHT_O_CLOCK, FOUR_O_CLOCK)
+            Point(-1, 1) -> listOf(SEVEN_O_CLOCK)
+            else -> throw RuntimeException("Unable to determine next move")
+        }
+        nextDirections.map { it.point }.forEach {
+            currentPoint = currentPoint.add(it)
+            nextMoves.add(currentPoint)
+        }
+        currentPoint = destinationPoint
+        nextMoves.add(destinationPoint)
+        return nextMoves
     }
 
     fun findPath(): List<Point> {
         val path = mutableListOf<Point>()
         while (currentPoint != destinationPoint) {
-            println("currentPoint: $currentPoint")
+//            println("currentPoint: $currentPoint")
             path.add(currentPoint)
-            if ((destinationPoint.x - currentPoint.x).absoluteValue < 2 || (destinationPoint.y - currentPoint.y) < 2) {
+            if ((destinationPoint.x - currentPoint.x).absoluteValue < 2 && (destinationPoint.y - currentPoint.y) < 2) {
                 println("Got Close! current: $currentPoint, destination: $destinationPoint")
+                path.addAll(dialInPosition())
                 break
             }
-            currentPoint = findNextMove(currentPoint)
+            currentPoint = findNextGeneralDirectionMove(currentPoint)
             if (path.size > 1 && currentPoint == path[path.size - 2]) {
                 println("Next move equals previous move")
                 break
@@ -66,16 +93,28 @@ class Knight(
     }
 
     companion object {
-        private val availableDirections = listOf(
-            Point(2, 1),
-            Point(2, -1),
-            Point(1, 2),
-            Point(1, -2),
-            Point(-2, 1),
-            Point(-2, -1),
-            Point(-1, 2),
-            Point(-1, -2),
+        private val availableDirections = mapOf(
+            ONE_O_CLOCK to Point(1, 2),
+            TWO_O_CLOCK to Point(2, 1),
+            FOUR_O_CLOCK to Point(2, -1),
+            FIVE_O_CLOCK to Point(1, -2),
+            SEVEN_O_CLOCK to Point(-1, -2),
+            EIGHT_O_CLOCK to Point(-2, -1),
+            TEN_O_CLOCK to Point(-2, 1),
+            ELEVEN_O_CLOCK to Point(-1, 2),
         )
     }
 
+}
+
+//Knight moves broken down into positions around an analog clock
+enum class KnightMoves(val point: Point) {
+    ONE_O_CLOCK(Point(1, 2)),
+    TWO_O_CLOCK(Point(2, 1)),
+    FOUR_O_CLOCK(Point(2, -1)),
+    FIVE_O_CLOCK(Point(1, -2)),
+    SEVEN_O_CLOCK(Point(-1, -2)),
+    EIGHT_O_CLOCK(Point(-2, -1)),
+    TEN_O_CLOCK(Point(-2, 1)),
+    ELEVEN_O_CLOCK(Point(-1, 2)),
 }
