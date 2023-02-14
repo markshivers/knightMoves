@@ -1,7 +1,13 @@
 fun main(args: Array<String>) {
-    println("Hello World!")
+    val knight = constructKnightFromArguments(args)
+    val path = knight.findShortestPath()
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+    if(path.point == Point(-1, -1)){
+        println("-1")
+        return
+    }
+    val pathList = path.toList()
+    println(">> Path: ${getPrintablePath(pathList)}")
+    println(">> Steps: ${pathList.size - 1}")
+
 }

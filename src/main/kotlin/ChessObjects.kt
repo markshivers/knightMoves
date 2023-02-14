@@ -3,13 +3,13 @@ data class ChessBoard(
     val height: Int,
 ) {
     init {
-        if ((height < 0) xor (width < 0)) {
+        if ((height < 0) xor (width < 0) || (height == 0 || width == 0)) {
             throw InvalidChessBoardDimensionsException("Unable to construct a chessboard of dimensions $width by $height")
         }
     }
 
     fun containsPoint(point: Point): Boolean {
-        if (height == -1 && width == -1) {
+        if (height < 0 && width < 0) {
             return (point.x >= 0) && (point.y >= 0)
         } else {
             return (point.x >= 0) && (point.x < width) && (point.y >= 0) && (point.y < height)
