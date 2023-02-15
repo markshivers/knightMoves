@@ -2,3 +2,4 @@ class InvalidChessBoardDimensionsException(message: String): RuntimeException(me
 class InvalidStartingPointException(message: String): RuntimeException(message)
 class InvalidDestinationException(message: String): RuntimeException(message)
 class NumberParsingException(message: String): RuntimeException(message)
+class InvalidArgumentsException(message: String): RuntimeException(message)

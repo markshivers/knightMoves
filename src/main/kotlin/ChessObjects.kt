@@ -9,7 +9,7 @@ data class ChessBoard(
     }
 
     fun containsPoint(point: Point): Boolean {
-        if (height < 0 && width < 0) {
+        if (height < 0) {
             return (point.x >= 0) && (point.y >= 0)
         } else {
             return (point.x >= 0) && (point.x < width) && (point.y >= 0) && (point.y < height)
@@ -42,7 +42,7 @@ class Knight(
         while (allPossiblePaths.isNotEmpty()) {
             val currentPathNode = allPossiblePaths.first()
             if (currentPathNode.point == destinationPoint) {
-                // Since we are using a Breadth First Search the first path that gets to the destination
+                // Since we are using a Breadth First Search the first path that gets to the destination is the shortest
                 return currentPathNode
             }
             //Removing the first path from the queue as it will either be used in the next created possible paths, or it will not reach the destination
@@ -50,11 +50,8 @@ class Knight(
 
             KnightMove.values().forEach {
                 val nextPoint = currentPathNode.point.add(it.direction)
-                if (chessBoard.containsPoint(nextPoint)) {
-                    if (!visitedPoints.contains(nextPoint)) {
-                        allPossiblePaths.add(PathNode(nextPoint, currentPathNode))
-                        visitedPoints.add(nextPoint)
-                    }
+                if (chessBoard.containsPoint(nextPoint) && visitedPoints.add(nextPoint)) {
+                    allPossiblePaths.add(PathNode(nextPoint, currentPathNode))
                 }
             }
         }
