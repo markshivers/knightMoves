@@ -9,5 +9,4 @@ fun main(args: Array<String>) {
     val pathList = path.toList()
     println(">> Path: ${getPrintablePath(pathList)}")
     println(">> Steps: ${pathList.size - 1}")
-
 }
